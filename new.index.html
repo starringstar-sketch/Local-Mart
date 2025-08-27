@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local Mart - Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    header {
+      background-color: #388e3c;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .hero {
+      background-color: #c8e6c9;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .hero h2 {
+      margin: 0;
+      font-size: 32px;
+    }
+    .section-title {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 24px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .product {
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .product img {
+      width: 100%;
+      max-width: 180px;
+      height: auto;
+      border-radius: 4px;
+    }
+    .product h3 {
+      margin: 10px 0 5px;
+    }
+    .product p {
+      font-weight: bold;
+      color: #2e7d32;
+    }
+    .quantity-label {
+      margin-top: 10px;
+      display: block;
+      font-weight: 600;
+    }
+    .quantity-slider {
+      width: 100%;
+      margin-top: 5px;
+    }
+    .quantity-value {
+      font-weight: bold;
+      color: #388e3c;
+      margin-top: 5px;
+    }
+    .product button {
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .product button:hover {
+      background-color: #2e7d32;
+    }
+    .checkout-btn {
+      text-align: center;
+      margin: 30px;
+    }
+    .checkout-btn button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .checkout-btn button:hover {
+      background-color: #0d47a1;
+    }
+    .hidden {
+      display: none;
+    }
+    .order-summary, .order-form {
+      max-width: 500px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .order-summary ul {
+      padding: 0;
+      list-style: none;
+    }
+    .order-form input, .order-form textarea, .order-form select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .order-form button {
+      padding: 12px;
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .order-form button:hover {
+      background-color: #2e7d32;
+    }
+    footer {
+      text-align: center;
+      background-color: #388e3c;
+      color: white;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Local Mart</h1>
+    <p>Your neighborhood grocery store – online!</p>
+  </header>
+
+  <section class="hero">
+    <h2>Fresh Groceries Delivered to Your Doorstep</h2>
+    <p>Order online and get delivery within hours in your local area.</p>
+  </section>
+
+  <h2 class="section-title">Groceries</h2>
+
+  <section class="products" id="product-list">
+    <!-- Product 1 -->
+    <div class="product">
+      <img src="https://via.placeholder.com/180x120?text=Rice" alt="Rice" />
+      <h3>Basmati Rice</h3>
+      <p>₹120 / 1kg</p>
+      <label for="qty-rice" class="quantity-label">Quantity (kg):</label>
+      <input
+        type="range"
+        id="qty-rice"
+        class="quantity-slider"
+        min="1"
+        max="10"
+        value="1"
+        step="1"
+        oninput="updateQuantityValue('rice')"
+      />
+      <div id="qty-rice-value" class="quantity-value">1 kg</div>
+      <button onclick="addToBasket('Basmati Rice', 120, getQuantity('rice'))">Add to Basket</button>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product">
+      <img src="https://via.placeholder.com/180x120?text=Milk" alt="Milk" />
+      <h3>Fresh Milk</h3>
+      <p>₹30 / 1L</p>
+      <label for="qty-milk" class="quantity-label">Quantity (Liters):</label>
+      <input
+        type="range"
+        id="qty-milk"
+        class="quantity-slider"
+        min="1"
+        max="10"
+        value="1"
+        step="1"
+        oninput="updateQuantityValue('milk')"
+      />
+      <div id="qty-milk-value" class="quantity-value">1 L</div>
+      <button onclick="addToBasket('Fresh Milk', 30, getQuantity('milk'))">Add to Basket</button>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product">
+      <img src="https://via.placeholder.com/180x120?text=Dal" alt="Dal" />
+      <h3>Toor Dal</h3>
+      <p>₹110 / 1kg</p>
+      <label for="qty-dal" class="quantity-label">Quantity (kg):</label>
+      <input
+        type="range"
+        id="qty-dal"
+        class="quantity-slider"
+        min="1"
+        max="10"
+        value="1"
+        step="1"
+        oninput="updateQuantityValue('dal')"
+      />
+      <div id="qty-dal-value" class="quantity-value">1 kg</div>
+      <button onclick="addToBasket('Toor Dal', 110, getQuantity('dal'))">Add to Basket</button>
+    </div>
+  </section>
+
+  <div class="checkout-btn">
+    <button onclick="showCheckout()">🛒 Checkout</button>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div id="checkout-section" class="order-summary hidden">
+    <h3>Order Summary</h3>
+    <ul id="order-list"></ul>
+    <p><strong>Total: ₹<span id="total-amount">0</span></strong></p>
+    <button onclick="showAddressForm()">Confirm Checkout</button>
+  </div>
+
+  <!-- ADDRESS & PAYMENT -->
+  <div id="address-section" class="order-form hidden">
+    <h3>Enter Delivery Address & Payment Info</h3>
+    <form onsubmit="submitOrder(event)">
+      <label>Full Name:</label>
+      <input type="text" required />
+
+      <label>Address:</label>
+      <textarea required></textarea>
+
+      <label>Phone Number:</label>
+      <input type="tel" required />
+
+      <label>Payment Method:</label>
+      <select required>
+        <option value="">-- Select Payment --</option>
+        <option value="cod">Cash on Delivery</option>
+        <option value="upi">UPI</option>
+      </select>
+
+      <button type="submit">Submit Order</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Local Mart. All rights reserved.</p>
+  </footer>
+
+  <script>
+    let basket = [];
+
+    // Update slider value text next to slider
+    function updateQuantityValue(productKey) {
+      const slider = document.getElementById("qty-" + productKey);
+      const valueDisplay = document.getElementById("qty-" + productKey + "-value");
+      let unit = productKey === 'milk' ? 'L' : 'kg';
+      valueDisplay.textContent = slider.value + " " + unit;
+    }
+
+    // Get quantity value from slider as integer
+    function getQuantity(productKey) {
+      const slider = document.getElementById("qty-" + productKey);
+      return parseInt(slider.value);
+    }
+
+    function addToBasket(name, price, quantity) {
+      if(quantity <= 0){
+        alert("Please select a quantity of at least 1.");
+
+      }
+      basket.push({ name, price, quantity });
+      alert(name + " (" + quantity + ") added to basket.");
+      alert(quantity);
+    }
+
+    function showCheckout() {
+      if (basket.length === 0) {
+        alert("Your basket is empty!");
+        return;
+      }
+
+      document.getElementById("checkout-section").classList.remove("hidden");
+      const order

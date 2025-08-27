@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local Mart - Order via QR</title>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f5f5f5; color:#333; }
+    header { background:#388e3c; color:#fff; padding:20px; text-align:center; }
+    .products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; padding:20px; }
+    .product { background:#fff; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    img { width:100%; height:120px; object-fit:cover; border-radius:4px; }
+    .base-price { color:#2e7d32; font-weight:bold; margin:10px 0; }
+    input.qty { width:60px; text-align:center; font-size:14px; }
+    .qty-container { margin:10px 0; display:flex; justify-content:center; align-items:center; gap:5px; }
+    .calc-price { font-weight:bold; color:#1976d2; margin:8px 0; }
+    button { background:#388e3c; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+    button:hover{ background:#2e7d32; }
+    .checkout-btn, .receipt { max-width:400px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    .receipt { white-space: pre-wrap; font-family:monospace; }
+    input, textarea, select { width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:4px; font-size:14px; }
+    .hidden{ display:none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Local Mart</h1>
+  <p>Order easily via QR scan</p>
+</header>
+
+<div class="products" id="product-list">
+  <!-- Products: Rice -->
+  <div class="product" data-key="rice" data-base-price="120" data-unit="kg">
+    <h3>Basmati Rice</h3>
+    <div class="base-price">₹120 / 1 kg</div>
+    <input src="https://via.placeholder.com/200x120?text=Rice" alt="Rice" />
+    <div class="qty-container">
+      <button onclick="changeQty('rice', -1)">–</button>
+      <input type="number" id="qty-rice" class="qty" min="1" value="1" onchange="updateLine('rice')" />
+      <button onclick="changeQty('rice', +1)">+</button>
+    </div>
+    <div id="calc-rice" class="calc-price">Price: ₹120</div>
+    <button onclick="addToBasket('Basmati Rice', 'rice')">Add to Basket</button>
+  </div>
+  <!-- Same for other items -->
+  <div class="product" data-key="milk" data-base-price="30" data-unit="L">
+    <h3>Fresh Milk</h3>
+    <div class="base-price">₹30 / 1 L</div>
+    <input src="https://via.placeholder.com/200x120?text=Milk" alt="Milk" />
+    <div class="qty-container">
+      <button onclick="changeQty('milk', -1)">–</button>
+      <input type="number" id="qty-milk" class="qty" min="1" value="1" onchange="updateLine('milk')" />
+      <button onclick="changeQty('milk', +1)">+</button>
+    </div>
+    <div id="calc-milk" class="calc-price">Price: ₹30</div>
+    <button onclick="addToBasket('Fresh Milk', 'milk')">Add to Basket</button>
+  </div>
+  <!-- Add 4 more product divs similarly... -->
+</div>
+
+<div class="checkout-btn">
+  <button onclick="openCheckout()">Go to Checkout</button>
+</div>
+
+<div id="checkout" class="hidden checkout-btn">
+  <h2>Checkout</h2>
+  <div id="order-summary"></div>
+  <p><strong>Total: ₹<span id="order-total">0</span></strong></p>
+  <form onsubmit="submitMyOrder(event)">
+    <input type="text" id="cust-name" placeholder="Full Name" required />
+    <textarea id="cust-address" placeholder="Address" required></textarea>
+    <input type="tel" id="cust-phone" placeholder="Mobile Number" required />
+    <select id="cust-payment" required>
+      <option value="">Select Payment Method</option>
+      <option value="cod">Cash on Delivery</option>
+      <option value="upi">UPI</option>
+    </select>
+    <button type="submit">Place Order</button>
+  </form>
+</div>
+
+<div id="receipt" class="receipt hidden"></div>
+
+<script>
+  const basket = [];
+
+  function changeQty(key, delta) {
+    const inp = document.getElementById(`qty-${key}`);
+    inp.value = Math.max(1, parseInt(inp.value) + delta);
+    updateLine(key);
+  }
+
+  function updateLine(key) {
+    const priceEl = document.getElementById(`calc-${key}`);
+    const productDiv = document.querySelector(`.product[data-key="${key}"]`);
+    const base = parseInt(productDiv.getAttribute('data-base-price'));
+    const unit = productDiv.getAttribute('data-unit');
+    const qty = parseInt(document.getElementById(`qty-${key}`).value);
+    priceEl.textContent = `Price: ₹${base * qty}`;
+  }
+
+  function addToBasket(name, key) {
+    const productDiv = document.querySelector(`.product[data-key="${key}"]`);
+    const base = parseInt(productDiv.getAttribute('data-base-price'));
+    const qty = parseInt(document.getElementById(`qty-${key}`).value);
+    basket.push({ name, unitPrice: base, quantity: qty });
+    alert(`Added ${qty} x ${name} to basket`);
+  }
+
+  function openCheckout() {
+    if (!basket.length) return alert("Basket is empty");
+    document.getElementById('checkout').classList.remove('hidden');
+    let out = '';
+    let tot = 0;
+    basket.forEach((item,i)=>{
+      out+= `${i+1}. ${item.name} – ₹${item.unitPrice} × ${item.quantity} = ₹${item.unitPrice*item.quantity}<br>`;
+      tot+= item.unitPrice*item.quantity;
+    });
+    document.getElementById('order-summary').innerHTML = out;
+    document.getElementById('order-total').textContent = tot;
+  }
+
+  function submitMyOrder(ev) {
+    ev.preventDefault();
+    const name = document.getElementById('cust-name').value.trim();
+    const address = document.getElementById('cust-address').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const payment = document.getElementById('cust-payment').value;
+    if (!name || !address || !phone || !payment) return alert('Fill all details');
+    const now = new Date().toLocaleString();
+    const receipt = `
+ORDER RECEIPT — Local Mart
+${now}
+
+${basket.map((it,i)=>`${i+1}. ${it.name} – ₹${it.unitPrice} × ${it.quantity} = ₹${it.unitPrice*it.quantity}`).join('\n')}
+------------------------------
+Total: ₹${basket.reduce((s,i)=>s + i.unitPrice*i.quantity,0)}
+
+Name   : ${name}
+Phone  : ${phone}
+Address: ${address}
+Payment: ${payment}
+
+Thank you for your order!`;
+    document.getElementById('receipt').textContent = receipt;
+    document.getElementById('receipt').classList.remove('hidden');
+    alert("Order placed successfully!");
+    // 🔍 NOTE: In real implementation, you'd POST data to backend here
+  }
+</script>
+
+</body>
+</html>
