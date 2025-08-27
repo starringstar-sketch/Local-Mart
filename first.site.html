@@ -708,19 +708,58 @@
     }
 
     // Place order
-    function placeOrder(e) {
-      e.preventDefault();
+    // Replace the placeOrder function with this updated version
+async function placeOrder(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const address = document.getElementById('address').value;
+  const payment = document.getElementById('payment').value;
+  
+  // Validate form
+  if (!name || !phone || !address || !payment) {
+    alert('Please fill all fields');
+    return;
+  }
+  
+  // Create order object
+  const order = {
+    customer: { name, phone, address, payment },
+    items: cart,
+    total: calculateTotal(),
+    date: new Date().toISOString()
+  };
+  
+  try {
+    // Send order to backend
+    const response = await fetch('https://bebfd617-6ee6-4ef3-9960-ef435ddfbf09-00-nremwdr62cu0.spock.replit.dev/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(order)
+    });
+    
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      // Show success message
+      checkoutForm.style.display = 'none';
+      orderSuccess.style.display = 'block';
       
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('address').value;
-      const payment = document.getElementById('payment').value;
-      
-      // Validate form
-      if (!name || !phone || !address || !payment) {
-        alert('Please fill all fields');
-        return;
-      }
+      // Clear cart
+      cart = [];
+      saveCartToStorage();
+      updateCartUI();
+    } else {
+      alert('There was an error placing your order. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('There was an error placing your order. Please try again.');
+  }
+}
       
       // Create order object
       const order = {
